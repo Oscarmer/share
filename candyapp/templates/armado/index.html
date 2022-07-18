@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block titulo %} Productos {% endblock %}
+
+{% block contenido %} 
+<div class="row">
+    {% for posicion in posiciones %}
+    {% if forloop.first %}
+    <h1 class="card-title m-4">Adiciones para {{posicion.id_pd_id}}</h1>
+    {% endif %}
+    <div class="col col-lg-3">
+        <div class="card m-4 bg-warning border-dark">
+            <div class="card-body">
+                <h4 class="card-title">{{posicion.nombre}}</h4>
+                <table class="table">
+                    <thead>
+                    
+                    <tbody>
+                        {% for materia in materias %}
+                        <tr>
+                            {% if materia.descripcion == posicion.id_ps %}   
+                                <td>{{materia.nombre}}</td>
+                                <td> 
+                                    <a name="" id="agregar" class="btn btn-dark text-white" href="{% url 'agregar_ar' lugar materia.car materia.tiempo materia.id_ms %}" role="button">+</a>
+                                </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                        
+                    </tbody>
+        
+                 </table>
+        
+            </div>
+
+        </div>  
+
+    </div>  
+    {% endfor %}
+    <div class="col-lg-6">
+        <div class="card m-4 bg-info border-dark">
+            <div class="card-body">
+                <h4 class="card-title">Escogidos</h4>
+                <table class="table">
+                    <thead>
+                    
+                    <tbody>
+                        {% for armado in armados %}
+                        <tr>  
+                                <td>{{armado.nombre_ms}}</td>
+                                <td> 
+                                    <a name="" id="" class="btn btn-danger" href="{% url 'eliminar_ar' lugar armado.id_ar armado.id_cr_id armado.id_mn_id %}" role="button">Borrar</a>
+                                </td>
+                        </tr>
+
+                        {% endfor %}
+                        
+                    </tbody>
+        
+                </table>
+                
+            </div>
+            <div class="card-footer"> precio: {{precio}} </div>
+            <a name="" id="" class="btn btn-dark text-white m-2" href="carrito" role="button">Armado</a>
+        </div>  
+    </div>
+</div>    
+{% endblock %}

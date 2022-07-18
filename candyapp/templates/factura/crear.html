@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block titulo %} Factura {% endblock %}
+
+{% block contenido %} 
+
+<div class="card bg-warning border-dark">
+    <div class="card-header">
+        Factura
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">Datos de la factura</h4>
+
+      {% include 'form.html' %}  
+
+    </div>
+    <div class="card-footer text-muted">
+        
+    </div>
+</div>
+
+{% endblock %}

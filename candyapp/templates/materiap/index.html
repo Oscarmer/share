@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block titulo %} Productos {% endblock %}
+
+{% block contenido %} 
+<div class="card m-4 bg-secondary border-dark">
+    <div class="card-header">
+        <a name="" id="" class="btn btn-success" href="{% url 'agregar_mp' lugar %}" role="button">Agregar materia prima</a>
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">Materia Prima</h4>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Cantidad</th>
+                    <th>Costo</th>
+                    <th>Costo Unitario</th>
+                    <th>Proveedor</th>
+                    <th>contacto</th>
+                    <th>Descripcion</th>
+                    <th>Estado</th>
+                    <th>Ultima modificacion</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for materias in materiap %}
+                {% if materias.estado == 'Inactivo' %}
+                    <tr class="table-danger">
+                {% else %}
+                    <tr>
+                {% endif %}
+                    <td>{{materias.nombre}}</td>
+                    <td>{{materias.cantidad}}</td>
+                    <td>{{materias.costo}}</td>
+                    <td>{{materias.costo_u}}</td>
+                    <td>{{materias.proveedor}}</td>
+                    <td>{{materias.contacto}}</td>
+                    <td>{{materias.descripcion}}</td>
+                    <td>{{materias.estado}}</td>
+                    <td>{{materias.fecha}}</td>
+                    <td> 
+                        <a name="" id="" class="btn btn-info text-white" href="{% url 'editar_mp' lugar materias.id_mp %}" role="button">Editar</a> 
+                        |  <a name="" id="" class="btn btn-danger" href="{% url 'eliminar_mp' lugar materias.id_mp %}" role="button">Borrar</a>
+                        {% if lugar == 1 %}
+                        |  <a name="" id="" class="btn btn-warning text-white mt-2 " href="{% url 'enviarp' lugar materias.nombre %}" role="button">Enviar</a>
+                        |  <a name="" id="" class="btn btn-primary mt-2" href="{% url 'avastecer' lugar materias.id_mp %}" role="button">Avastecer</a>
+                        {% endif %}
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+
+    </div>
+    <div class="card-footer text-muted">
+
+    </div>
+</div>
+{% endblock %}

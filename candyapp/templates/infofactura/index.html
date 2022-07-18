@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block titulo %} Historial {% endblock %}
+
+{% block contenido %} 
+
+<div class="card m-4 bg-secondary border-dark">
+    <div class="card-body">
+        <h4 class="card-title">Historial</h4>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Precio</th>
+                    <th>lugar</th>
+                    <th>producto</th>
+                    <th>Dia-Mes-año hora</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for titulo in titulos %}
+                <tr>
+                    <td>{{titulo.0}}</td>
+                    <td>{{titulo.2}}</td>
+                    <td>{{nombre}}</td>
+                    <td>{{titulo.1}}</td>
+                    <td>{{titulo.3}}</td>
+                    <td>  
+                        <a name="" id="" class="btn btn-primary" href="{% url 'masinfo' lugar titulo.0 %}" role="button">Mas info</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+
+    </div>
+    <div class="card-footer text-muted">
+
+    </div>
+</div>
+{% endblock %}

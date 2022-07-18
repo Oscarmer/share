@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block titulo %} Productos {% endblock %}
+
+{% block contenido %} 
+<div class="card m-4 bg-secondary border-dark">
+
+    <div class="card-body">
+        <div class="card-header">
+            <a name="" id="" class="btn btn-success" href="{% url 'agregar_mz' lugar materias %}" role="button">Agregar</a>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Materia Prima</th>
+                    <th>Cantidad</th>
+                    <th>Costo</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mezcla in mezclas %}
+                {% if forloop.first %}
+                    <h4 class="card-title">Ingredientes para {{mezcla.id_ms_id}}</h4>
+                {% endif %}
+                <tr>   
+                        <td>{{mezcla.id_mz}}</td>
+                        <td>{{mezcla.id_mp_id}}</td>
+                        <td >{{mezcla.cantidad}}</td>
+                        <td>{{mezcla.costo}}</td>
+                        <td> 
+                            <a name="" id="" class="btn btn-info" href="{% url 'editar_mz' lugar mezcla.id_mz mezcla.id_us_id %}" role="button">Editar</a> 
+                            |  <a name="" id="" class="btn btn-danger" href="{% url 'eliminar_mz' lugar mezcla.id_mz mezcla.id_us_id %}" role="button">Borrar</a>
+                        </td>
+                </tr>
+
+                {% endfor %}
+            </tbody>
+
+        </table>
+        
+
+    </div>
+    <div class="card-footer text-muted">
+
+    </div>
+</div>
+{% endblock %}

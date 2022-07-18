@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block titulo %} Agregar mezcla {% endblock %}
+
+{% block contenido %} 
+
+<div class="card bg-warning border-dark">
+    <div class="card-header">
+        Agregar mezcla
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">Datos del producto</h4>
+
+      {% include 'form.html' %}  
+    </div>
+    <div class="card-footer text-muted">
+        
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block titulo %} Grupos {% endblock %}
+
+{% block contenido %} 
+<div class="card m-4 bg-secondary border-dark">
+    <div class="card-header m-2">
+        <a name="" id="" class="btn btn-success" href="{% url 'agregar_ps' lugar producto %}" role="button">Agregar</a>
+    </div>
+    <div class="card-body">
+
+        <table class="table">
+    
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for posicion in posiciones %}
+                {% if forloop.first %}
+                    <h4 class="card-title">Grupos de {{posicion.id_us_id}}</h4>
+                {% endif %}
+                <tr>   
+                        <td>{{posicion.id_ps}}</td>
+                        <td>{{posicion.nombre}}</td>
+                        <td >{{posicion.precio}}</td>
+                        <td> 
+                            <a name="" id="" class="btn btn-info" href="{% url 'editar_ps' lugar posicion.id_ps posicion.id_pd_id %}" role="button">Editar</a> 
+                            |  <a name="" id="" class="btn btn-danger" href="{% url 'eliminar_ps' lugar posicion.id_ps posicion.id_pd_id %}" role="button">Borrar</a>
+                            |  <a name="" id="" class="btn btn-success" href="{% url 'menus' lugar posicion.id_ps %}" role="button">Elementos</a>
+                        </td>
+                </tr>
+
+                {% endfor %}
+            </tbody>
+
+        </table>
+        
+
+    </div>
+    <div class="card-footer text-muted">
+
+    </div>
+</div>
+{% endblock %}

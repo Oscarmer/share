@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block titulo %} Inicio {% endblock %}
+
+{% block contenido %} 
+
+<div class="p-5 m-4">
+    <div class="container">
+        <h1 class="display-3">CandyExplot</h1>
+        <hr class="my-2">
+    </div>
+</div>
+
+<div class="row">
+
+
+    {% for producto in productos %}
+
+            <div class="col md-6 sm-12">
+                <div class="card m-4 bg-warning border-dark">
+                    <div class="card-body">
+                        <h4 class="card-title">{{producto.nombre}}</h4>
+                        <p class="card-text">{{producto.descripcion}}</p>
+                        <a name="" id="" class="btn btn-dark text-white" href="{% url 'agregar_cr' lugar producto.id_pd %}" role="button">Agregar</a>
+                    </div>
+                </div>
+            </div>
+
+    {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block titulo %} Productos {% endblock %}
+
+{% block contenido %} 
+<div class="row">
+    <h1 class="card-title m-4">Entregados</h1>
+    {% for mesa in mesas %}
+    <div class="col col-lg-6">
+        <div class="card m-4 bg-warning border-dark">
+            <div class="card-body">
+                <h4 class="card-title">{{mesa.0}} {{mesa.2}} {{mesa.1}} </h4>
+                <table class="table">
+                    <thead>
+                    
+                    <tbody>
+                        {% for entregado in entregados %}
+                        <tr>
+                            {% if entregado.mesa == mesa.0 %} 
+                                <td>{{entregado.id_cr}}</td> 
+                                <td>{{entregado.descripcion}}</td>
+                                <td>{{entregado.precio}}</td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+    
+                    </tbody>
+        
+                 </table>
+                 <a name="" id="" class="btn btn-dark text-white" href="{% url 'factura' lugar mesa.0 %}" role="button">Facturar</a>
+            </div>
+
+        </div>  
+
+    </div>  
+    {% endfor %}
+{% endblock %}

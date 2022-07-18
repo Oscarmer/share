@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block titulo %} Productos {% endblock %}
+
+{% block contenido %}   
+        <div class="card m-4 bg-secondary border-dark">
+            <div class="card-header">
+                <a name="" id="" class="btn btn-success" href="addproductos" role="button">Agregar nuevo producto</a>
+            </div>
+            <div class="card-body">
+                <h4 class="card-title">Productos</h4>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Precio base</th>
+                            <th>Descripcion</th>
+                            <th>Estado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for producto in productos %}
+                        <tr>
+                            <td>{{producto.nombre}}</td>
+                            <td>{{producto.precio}}</td>
+                            <td>{{producto.descripcion}}</td>
+                            <td>{{producto.estado}}</td>
+                            <td> 
+                                <a name="" id="" class="btn btn-info" href="{% url 'editar' lugar producto.id_pd %}" role="button">Editar</a> 
+                                |  <a name="" id="" class="btn btn-danger" href="{% url 'eliminar' lugar producto.id_pd %}" role="button">Borrar</a>
+                                |  <a name="" id="" class="btn btn-warning" href="{% url 'basepd' lugar producto.id_pd %}" role="button">Base</a>
+                                |  <a name="" id="" class="btn btn-success" href="{% url 'posiciones' lugar producto.id_pd %}" role="button">Menu</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+
+            </div>
+            <div class="card-footer text-muted">
+
+            </div>
+        </div>
+{% endblock %}

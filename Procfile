@@ -1,0 +1,1 @@
+web: gunicorn candyweb.wsgi --log-file -

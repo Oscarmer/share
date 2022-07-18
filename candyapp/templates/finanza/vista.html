@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block titulo %} Admin {% endblock %}
+
+{% block contenido %} 
+
+<div class="row">
+    <div class="col-sm-6">
+      <div class="card m-4 bg-warning border-dark">
+        <div class="card-body">
+          <h5 class="card-title">Historial de finanzas</h5>
+          <p class="card-text">Aqui se encuentran todos los registros de entradas y salidas
+          </p>
+          <a href="historiafz" class="btn btn-dark">Ver</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="card m-4 bg-warning border-dark">
+        <div class="card-body">
+          <h5 class="card-title">Agregar salida</h5>
+          <p class="card-text">Aqui se ingresan las salidas de costos fijos</p>
+          <a href="addfinanzas" class="btn btn-dark">Agregar</a>
+        </div>
+      </div>
+    </div>
+</div>
+  
+
+{% endblock %}

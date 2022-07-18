@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block titulo %} Productos {% endblock %}
+
+{% block contenido %} 
+<div class="card m-4 bg-secondary border-dark">
+    <div class="card-header">
+        <a name="" id="" class="btn btn-success" href="{% url 'agregar_ms' lugar %}" role="button">Agregar</a>
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">Materia secundaria</h4>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nombre</th>
+                    <th>Descripcion</th>
+                    <th>estado</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for materia in materias %}
+                <tr>
+                    <td>{{materia.id_ms}}</td>
+                    <td>{{materia.nombre}}</td>
+                    <td>{{materia.descripcion}}</td>
+                    <td>{{materia.estado}}</td>
+                    <td> 
+                        <a name="" id="" class="btn btn-info" href="{% url 'editar_ms' lugar materia.id_ms %}" role="button">Editar</a> 
+                        |  <a name="" id="" class="btn btn-danger" href="{% url 'eliminar_ms' lugar materia.id_ms %}" role="button">Borrar</a>
+                        |  <a name="" id="" class="btn btn-success" href="{% url 'mezclas' lugar materia.id_ms %}" role="button">ingredientes</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+
+    </div>
+    <div class="card-footer text-muted">
+
+    </div>
+</div>
+{% endblock %}

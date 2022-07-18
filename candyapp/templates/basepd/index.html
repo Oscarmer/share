@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block titulo %} Base {% endblock %}
+
+{% block contenido %}   
+        <div class="card m-4 bg-secondary border-dark">
+            <div class="card-header">
+                <a name="" id="" class="btn btn-success" href="{% url 'addbasepd' lg id %}" role="button">Agregar nueva base</a>
+            </div>
+            <div class="card-body">
+                <h4 class="card-title">Bases de {{nombre}}</h4>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Materia</th>
+                            <th>Cantidad</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for base in bases %}
+                        <tr>
+                            <td>{{base.nombre}}</td>
+                            <td>{{base.cantidad}}</td>
+                            <td> 
+                                <a name="" id="" class="btn btn-info" href="#" role="button">Editar</a> 
+                                |  <a name="" id="" class="btn btn-danger" href="{% url 'delbasepd' lg base.descripcion id %}" role="button">Borrar</a>                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+
+            </div>
+            <div class="card-footer text-muted">
+
+            </div>
+        </div>
+{% endblock %}

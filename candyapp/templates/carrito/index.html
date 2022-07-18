@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block titulo %} Grupos {% endblock %}
+
+{% block contenido %}   
+    <div class="card m-4 bg-secondary border-dark">  
+        <div class="card-header">
+            <a name="" id="" class="btn btn-success" href="home" role="button">Agregar</a>
+            <a name="" id="" class="btn btn-primary" href="{% url 'agregar_en' lugar %}" role="button">Finalizar</a>
+        </div>
+        <div class="card-body">
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>producto</th>
+                        <th>precio</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for carrito in carritos %}
+                    <tr>   
+                            <td>{{carrito.id_cr}}</td>
+                            <td>{{carrito.nombre_pd}}</td>
+                            <td>{{carrito.precio}}</td>
+                            <td>  
+                                <a name="" id="" class="btn btn-danger" href="{% url 'eliminar_cr' lugar carrito.id_cr carrito.id_pd_id %}" role="button">Borrar</a>
+                                | <a name="" id="" class="btn btn-success" href="{% url 'armado' lugar carrito.id_cr %}" role="button">Adiciones</a>
+                            </td>
+                    </tr>
+
+                    {% endfor %}
+                </tbody>
+
+            </table>
+            
+
+        </div>
+        <div class="card-footer"> precio: {{precio}} </div>
+
+        </div>
+    </div>
+{% endblock %}
