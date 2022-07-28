@@ -1,0 +1,46 @@
+{% extends "base2.html" %}
+
+{% block titulo %} Historial {% endblock %}
+
+{% block contenido %} 
+
+<div class="card m-4 bg-secondary border-dark">
+    <div class="card-body">
+        <h4 class="card-title">Historial</h4>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Servicio</th>
+                    <th>Costo</th>
+                    <th>Hora</th>
+                    <th></th>
+                </tr>
+            </thead>
+            {% for info in infos %}
+            {% if info.costo > 0 %}   
+                <tbody class="bg-success">
+                    <tr>
+                        <td>{{info.servicio}}</td>
+                        <td>{{info.costo}}</td>
+                        <td>{{info.hora}}</td>
+                    </tr>
+                </tbody>
+            {% else %}
+                <tbody class="bg-danger">
+                    
+                    <tr>
+                        <td>{{info.servicio}}</td>
+                        <td>{{info.costo}}</td>
+                        <td>{{info.hora}}</td>
+                    </tr>
+
+                </tbody>
+            {% endif %}
+            {% endfor %}
+    </div>
+    <div class="card-footer text-muted">
+
+    </div>
+</div>
+{% endblock %}

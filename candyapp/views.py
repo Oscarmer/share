@@ -79,7 +79,10 @@ def add_finz(request, lg):
     return render(request, "finanza/addfz.html", {'formulario': formulario})
 
 def verfinanza(request, lg):
-    return render(request, "finanza/vista.html")
+    if lg == 1:
+        return render(request, "finanza/bodvista.html")
+    else:
+        return render(request, "finanza/vista.html")
 
 def gen_add(lg):
     historial_fz.objects.get_or_create(fecha=datetime.now().strftime("%m")+"/"+datetime.now().strftime("%y"), id_lg=lg)
@@ -101,7 +104,10 @@ def gen_fz(request, lg):
             hs.costot = costo
             filtro.append(hs)
             costo = 0
-    return render(request, "finanza/gen.html", {'historiales': filtro, 'lugar': lg })
+    if lg == 1:
+        return render(request, "finanza/bodgen.html", {'historiales': filtro, 'lugar': lg })
+    else:
+        return render(request, "finanza/gen.html", {'historiales': filtro, 'lugar': lg })
 
 def info_fz(request, id, lg):
     histo = compt.objects.all()
@@ -110,7 +116,11 @@ def info_fz(request, id, lg):
         if hs.id_lg == lg:
             if hs.finz == id:
                 info.append(hs)
-    return render(request, "finanza/masinfo.html", {'infos': info})
+    if lg == 1:
+        return render(request, "finanza/bodinfo.html", {'infos': info})
+    else:
+        return render(request, "finanza/masinfo.html", {'infos': info})
+
 
 def veract(lg):
     historial = finanza.objects.all()
@@ -140,7 +150,10 @@ def hist_fz(request, lg, id):
             hs.save()
             filtro.append(hs)
             costo = 0
-    return render(request, "finanza/index.html", {'historiales': filtro, 'lugar': lg })
+    if lg == 1:
+        return render(request, "finanza/bodindex.html", {'historiales': filtro, 'lugar': lg })
+    else:
+        return render(request, "finanza/index.html", {'historiales': filtro, 'lugar': lg })
     
 def finanzas(serv ,servicio, costo, link, lg):
     id = gen_add(lg)
@@ -181,15 +194,17 @@ def log(request, id):
     return redirect("/"+ str(log)+ "/" + 'home')
 
 def home(request, lg):
+    print(lg)
+    lugares = lugar.objects.get(id_lg=lg)
     productos = producto.objects.all()
     lista = []
     for pd in productos:
         if pd.id_lg_id == lg:
             lista.append(pd)
-    return render(request, "pages/inicio.html", {'productos': lista, 'lugar': lg})
-
-def nosotros(request):
-    return render(request, "pages/nosotros.html")
+    if lg != 1:
+        return render(request, "pages/inicio.html", {'productos': lista, 'lugar': lg, 'nombre': lugares.nombre})
+    else:
+        return render(request, "pages/inbodega.html")
 
 def productos(request, lg):
     productos = producto.objects.all()
@@ -233,7 +248,10 @@ def materiap(request, lg):
     for mp in materiap:
         if mp.id_lg_id == lg:
             lista.append(mp)
-    return render(request, "materiap/index.html", {'materiap': lista, 'lugar': lg})
+    if lg == 1:    
+        return render(request, "materiap/bodega.html", {'materiap': lista, 'lugar': lg})
+    else:
+        return render(request, "materiap/index.html", {'materiap': lista, 'lugar': lg})
 
 def avastecer(request, id, lg):
     materia = materia_p.objects.get(id_mp=id)
@@ -255,6 +273,16 @@ def agregar_mp(request, lg):
     mincant = 0
     descripcion = "None"
     if formulario.is_valid():
+        if (formulario.data['costo'] == '' and formulario.data['costou'] == '') or (formulario.data['costo'] != '' and formulario.data['costou'] != '') :
+            costot = "nada"
+            costou = "nada"
+        elif formulario.data['costo'] == '':
+            costot = float(formulario.data['costou']) * float(formulario.data['cantidad'])
+            costou = float(formulario.data['costou'])
+        elif formulario.data['costou'] == '':
+            costou = float("{0:.2f}".format(int(formulario.data['costo'])/int(formulario.data['cantidad'])))
+            costot = float(formulario.data['costo'])
+
         if formulario.data['contacto'] != '':
             contacto = contacto = formulario.data['contacto']
 
@@ -267,14 +295,13 @@ def agregar_mp(request, lg):
         if formulario.data['descripcion'] != '':
             descripcion = formulario.data['descripcion']
 
-        data = {'nombre': formulario.data['nombre'], 'cantidad': int(formulario.data['cantidad']), 'unidad': formulario.data['unidad'], 'costo': float("{0:.2f}".format(int(formulario.data['costo']))), 'costo_u': float("{0:.2f}".format(int(formulario.data['costo'])/int(formulario.data['cantidad']))), 'proveedor': formulario.data['proveedor'], 'contacto': contacto, 'tiempo': tiempo, 'mincant': int(mincant), 'descripcion': descripcion, 'estado': 'Activo','fecha': str(fecha.strftime("%B")) + "/" + str(fecha.strftime("%Y")) , 'id_lg': lg}
-        costo = int(formulario.data['costo'])
+        data = {'nombre': formulario.data['nombre'], 'cantidad': int(formulario.data['cantidad']), 'unidad': formulario.data['unidad'], 'costo': costot, 'costo_u': costou, 'proveedor': formulario.data['proveedor'], 'contacto': contacto, 'tiempo': tiempo, 'mincant': int(mincant), 'descripcion': descripcion, 'estado': 'Activo','fecha': str(fecha.strftime("%B")) + "/" + str(fecha.strftime("%Y")) , 'id_lg': lg}
         nom = formulario.data['nombre']
         formulario = mpForm(data)
         if formulario.is_valid():
             formulario.save()
             materiap = materia_p.objects.get(nombre=nom, id_lg=lg)
-            finanzas(materiap.id_mp ,"Materia prima: "+ nom , 0-costo, "/materiap", lg)
+            finanzas(materiap.id_mp ,"Materia prima: "+ nom , 0-costot, "/materiap", lg)
         return redirect('/' + str(lg) + '/materiap')
     return render(request, "materiap/crear.html", {'formulario': formulario})
 
@@ -315,15 +342,26 @@ def materias(request, lg):
     return render(request, "materias/index.html", {'materias': lista, 'lugar': lg})
 
 def agregar_ms(request, lg):
+    materias = materia_s.objects.all()
+    lugares = lugar.objects.all()
     formulario = dtMsForm(request.POST or None, request.FILES or None)
+    entra = "no"
     descripcion = "None"
     if formulario.is_valid():
         if formulario.data['descripcion'] != '':
             descripcion = formulario.data['descripcion']
-        data = {'nombre': formulario.data['nombre'], 'descripcion': descripcion, 'estado': "Activo", 'id_lg': lg}
-        formulario = msForm(data)
-        if formulario.is_valid():
-            formulario.save()
+            nombre = formulario.data['nombre']
+        for lug in lugares:
+            for ms in materias: 
+                if ms.id_lg_id == lug.id_lg and ms.nombre == nombre:
+                    entra = "si"
+                    break
+            if lug.id_lg != 1 and entra == "no":
+                data = {'nombre': nombre, 'descripcion': descripcion, 'estado': "Activo", 'id_lg': lug}
+                formulario = msForm(data)
+                if formulario.is_valid():
+                    formulario.save()
+            entra = "no"
         return redirect('/'+str(lg)+'/materias')
     return render(request, "materias/crear.html", {'formulario': formulario})
 
@@ -369,18 +407,31 @@ def mezclas(request, id, lg):
     return render(request, "mezcla/index.html", {'mezclas': ingredientes, 'materias': id, 'lugar': lg})
 
 def agregar_mz(request, id, lg):
+    mat = materia_s.objects.get(id_ms=id)
+    materias = materia_s.objects.all()
     materiap = materia_p.objects.all()
+    mezclas = mezcla.objects.all()
+    entro = "no"
     formulario = dtMzForm(request.POST or None, request.FILES or None)
     data = {}
     if formulario.is_valid():
+        nombremp = (formulario.data['materia_p']).upper()
         for mp in materiap:
-            if (mp.nombre).upper() == (formulario.data['materia_p']).upper():
-                if mp.id_lg_id == lg:
-                    data = {'id_ms': id, 'id_mp': mp.id_mp, 'cantidad': formulario.data['cantidad'], 'costo': int(formulario.data['cantidad']) * mp.costo_u}
-        formulario = mzForm(data)
-        if formulario.is_valid():
-            formulario.save()
-            return redirect("/"+ str(lg) +'/mezcla' + str(id))
+            if (mp.nombre).upper() == nombremp:
+                for ms in materias:
+                    for mz in mezclas:
+                        if ms.id_lg_id == mp.id_lg_id and mp.id_mp == mz.id_mp_id:
+                            entro = "si" 
+                            break
+                    if entro == "si":
+                        break
+                    elif ms.nombre == mat.nombre and ms.id_lg_id == mp.id_lg_id:
+                        data = {'id_ms': ms.id_ms, 'id_mp': mp.id_mp, 'cantidad': formulario.data['cantidad'], 'costo': int(formulario.data['cantidad']) * mp.costo_u}
+                        formulario = mzForm(data)
+                        if formulario.is_valid():
+                            formulario.save()
+            entro = "no"
+        return redirect("/"+ str(lg) +'/mezcla' + str(id))
     return render(request, "mezcla/crear.html", {'formulario': formulario})
 
 def editar_mz(request, id, id2, lg):
@@ -807,7 +858,10 @@ def agregar_inft(mesa, lg):
 #---------------------------------------------------------------------------------------------
 
 def admins(request, lg):
-    return render(request, "admins/index.html")
+    if lg == 1:
+        return render(request, "admins/bodega.html", {'lugar': lg}) 
+    else:
+        return render(request, "admins/index.html", {'lugar': lg})
 
 #--------------------------------------------------------------------------------------------
 

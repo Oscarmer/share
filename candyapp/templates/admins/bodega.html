@@ -1,0 +1,28 @@
+{% extends "base2.html" %}
+
+{% block titulo %} Admin {% endblock %}
+
+{% block contenido %} 
+
+<div class="row">
+    <div class="col-sm-6">
+      <div class="card m-4 bg-warning border-dark">
+        <div class="card-body">
+          <h5 class="card-title">Materia prima</h5>
+          <p class="card-text">Lista de materias primas</p>
+          <a href="materiap" class="btn btn-dark">Administrar</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 borde">
+        <div class="card m-4 bg-warning border-dark">
+          <div class="card-body">
+            <h5 class="card-title">Finanzas</h5>
+            <p class="card-text">Informacion del comportamiento de las finanzas</p>
+            <a href="finanzas" class="btn btn-dark">Ver</a>
+          </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

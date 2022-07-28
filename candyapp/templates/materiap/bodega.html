@@ -1,9 +1,12 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 
 {% block titulo %} Productos {% endblock %}
 
 {% block contenido %} 
 <div class="card m-4 bg-secondary border-dark">
+    <div class="card-header">
+            <a name="" id="" class="btn btn-success" href="{% url 'agregar_mp' lugar %}" role="button">Agregar materia prima</a>
+        </div>
     <div class="card-body">
         <h4 class="card-title">Materia Prima</h4>
 
@@ -41,6 +44,8 @@
                     <td> 
                         <a name="" id="" class="btn btn-info text-white" href="{% url 'editar_mp' lugar materias.id_mp %}" role="button">Editar</a> 
                         |  <a name="" id="" class="btn btn-danger" href="{% url 'eliminar_mp' lugar materias.id_mp %}" role="button">Borrar</a>
+                        |  <a name="" id="" class="btn btn-warning text-white mt-2 " href="{% url 'enviarp' lugar materias.nombre %}" role="button">Enviar</a>
+                        |  <a name="" id="" class="btn btn-primary mt-2" href="{% url 'avastecer' lugar materias.id_mp %}" role="button">Avastecer</a>
                     </td>
 
                 </tr>

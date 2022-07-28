@@ -1,0 +1,55 @@
+{% extends "base2.html" %}
+
+{% block titulo %} Historial {% endblock %}
+
+{% block contenido %} 
+ 
+<div class="card m-4 bg-secondary border-dark">
+    <div class="card-header">
+        <h4 class="card-title">Historial</h4>    
+    </div>
+    <div class="card-body">
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Utilidad</th>
+                    <th></th>
+                </tr>
+            </thead>
+            {% for histo in historiales %}
+            {% if histo.costot > 0 %}   
+                <tbody class="bg-success">
+                        <tr>
+                            <td>{{histo.fecha}}</td>
+                            <td>{{histo.costot}}</td>
+                            <td> 
+                                <a name="" id="" class="btn btn-info" href="{% url 'verfz' histo.id_lg histo.id_hf %}" role="button">Ver info</a> 
+                            </td> 
+                        </tr>
+                </tbody>
+            {% else %}
+                <tbody class="bg-danger">
+                    
+                    <tr>
+                        <td>{{histo.fecha}}</td>
+                        <td>{{histo.costot}}</td>
+                        <td> 
+                            <a name="" id="" class="btn btn-info" href="{% url 'verfz' histo.id_lg histo.id_hf %}" role="button">Ver info</a> 
+                        </td> 
+                    </tr>
+
+                </tbody>
+            {% endif %}
+            {% endfor %}
+        </table>
+        
+
+    </div>
+    <div class="card-footer text-muted">
+
+    </div>
+</div>
+
+{% endblock %}

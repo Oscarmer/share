@@ -30,7 +30,6 @@ urlpatterns = [
     path('agregarlg', views.agregar_lg, name="agregar_lg"),
     path('eliminarlg/<int:id>', views.eliminar_lg, name="eliminar_lg"),
     path('<int:lg>/home', views.home, name="inicio"),
-    path('nosotros', views.nosotros, name="nosotros"),
 #-------------------------------------------------------------------------------------------    
     path('<int:lg>/productos', views.productos, name="productos"),
     path('<int:lg>/addproductos', views.agregar_pd, name="agregar"),
