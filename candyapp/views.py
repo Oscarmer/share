@@ -19,20 +19,24 @@ def baseprod(request, lg, id):
     return render(request, "basepd/index.html", {'bases': filtro, 'nombre': pd.nombre, 'id': id, 'lg': lg})
 
 def addbase(request, lg, id):
+    pd = producto.objects.get(id_pd=id)
+    lugares = lugar.objects.all()
     materiap = materia_p.objects.all()
     formulario = infBaseForm(request.POST or None, request.FILES or None)
     if formulario.is_valid():
+        mats = formulario.data['materias']
+        cantidad = formulario.data['cantidad']
         for ms in materiap:
-            print((ms.nombre).upper())
-            print((formulario.data['materias']).upper())
-            print(formulario.data['cantidad'])
-            if (ms.nombre).upper() == (formulario.data['materias']).upper() and ms.id_lg_id == lg:
-                print("entra")
-                data = {'id_pd': id, 'id_mp': ms.id_mp, 'cantidad': formulario.data['cantidad']}
-                formulario = basepdForm(data)
-                if formulario.is_valid():
-                    formulario.save()
-                return redirect('/'+str(lg)+'/'+'base'+str(id))
+            if (ms.nombre).upper() == (mats).upper():
+                for lug in lugares:
+                    if lug.id_lg != 1:    
+                        pd2 = producto.objects.get(nombre=pd.nombre, id_lg=lug.id_lg)
+                        if ms.id_lg_id == lug.id_lg:
+                            data = {'id_pd': pd2.id_pd, 'id_mp': ms.id_mp, 'cantidad': cantidad}
+                            formulario = basepdForm(data)
+                            if formulario.is_valid():
+                                formulario.save()
+        return redirect('/'+str(lg)+'/'+'base'+str(id))
     return render(request, "basepd/crear.html", {'formulario': formulario})
 
 def delbase(request, id, lg, id2):
@@ -178,10 +182,21 @@ def lugares(request):
     return render(request, "lugar/index.html", {'lugares': lugares})
 
 def agregar_lg(request):
+    entro = "no"
+    lugares = lugar.objects.all()
     formulario = lgForm(request.POST or None, request.FILES or None)
     if formulario.is_valid():
-        formulario.save()
-        return redirect('lugar')
+        for lg in lugares:
+            if lg.nombre == formulario.data["nombre"]:
+                entro = "si"
+                break
+        if entro == "no":
+            formulario.save()
+            lug = lugar.objects.get(nombre=formulario.data["nombre"])
+            copymp(lug.id_lg)
+            copyz(lug.id_lg)
+            copyp(lug.id_lg)
+            return redirect('lugar')
     return render(request, "lugar/crear.html", {'formulario': formulario})    
 
 def eliminar_lg(request, id):
@@ -194,7 +209,6 @@ def log(request, id):
     return redirect("/"+ str(log)+ "/" + 'home')
 
 def home(request, lg):
-    print(lg)
     lugares = lugar.objects.get(id_lg=lg)
     productos = producto.objects.all()
     lista = []
@@ -214,15 +228,85 @@ def productos(request, lg):
             lista.append(pd)
     return render(request, "Productos/pindex.html", {'productos': lista, 'lugar': lg})
 
+def copybs(bas, pos, lg):
+    productos = producto.objects.all()
+    materiap = materia_p.objects.all()
+    for pd in productos:
+        if pd.id_lg_id == lg:
+            for mp in materiap:
+                if mp.id_lg_id == lg:
+                    for bu in bas:
+                        if mp.nombre == bu[1] and pd.nombre == bu[0]:
+                            data = {'id_pd': pd.id_pd, 'id_mp': mp.id_mp, 'cantidad': bu[1]}
+                            formulario = basepdForm(data)
+                            if formulario.is_valid():
+                                formulario.save() 
+            for pus in pos:
+                if pd.nombre == pus[0]:
+                    data = {'nombre': pus[1].nombre, 'precio': pus[1].precio, 'id_pd': pd.id_pd}
+                    formulario = psForm(data)
+                    if formulario.is_valid():
+                        formulario.save() 
+
+def copyp(lg):
+    productos = producto.objects.all()
+    bases = basepd.objects.all()
+    posiciones = posicion.objects.all()
+    pos = []
+    bas = []
+    nombres = []
+    estan = []
+    for pd in productos:
+        if pd.nombre not in nombres:
+            nombres.append(pd.nombre)
+            estan.append(pd)
+            for bs in bases:
+                if bs.id_pd_id == pd.id_pd:
+                    bas.append([pd.nombre, materia_p.objects.get(id_mp=bs.id_mp_id).nombre, bs.cantidad])
+            for ps in posiciones:
+                if ps.id_pd_id == pd.id_pd:
+                    pos.append([pd.nombre, ps])
+        else:
+            for bs in bases:
+                if bs.id_pd_id == pd.id_pd:
+                    for bus in bas:
+                        if materia_p.objects.get(id_mp=bs.id_mp_id).nombre == bus[1]:
+                            rep = "si"
+                            break
+                    if rep == "no":
+                        bas.append([pd.nombre, materia_p.objects.get(id_mp=bs.id_mp_id).nombre, bs.cantidad])
+                    rep = "no"
+            for ps in posiciones:
+                if ps.id_pd_id == pd.id_pd:
+                    for pus in pos:
+                        if ps.nombre == pus[1].nombre:
+                            rep = "si"
+                            break
+                    if rep == "no":
+                        pos.append([pd.nombre, ps])
+                    rep = "no"
+
+    for et in estan:
+        data = {'nombre': et.nombre, 'descripcion': et.descripcion, 'precio': float(et.precio), 'estado': "Activo", 'id_lg': lg}
+        formulario = productoForm(data)
+        if formulario.is_valid():
+            formulario.save()
+    copybs(bas, pos, lg)
+
 def agregar_pd(request, lg):
+    lugares = lugar.objects.all()
     formulario = infPdForm(request.POST or None, request.FILES or None)
     descripcion = "None"
     if formulario.is_valid():
         if formulario.data['descripcion'] != "":
             descripcion = formulario.data['descripcion']
-        data = {'nombre':formulario.data['nombre'], 'descripcion': descripcion, 'precio': formulario.data['precio'], 'estado': "Activo", 'id_lg': lg}
-        formulario = productoForm(data)
-        formulario.save()
+        precio = formulario.data['precio']
+        nombre = formulario.data['nombre']
+        for lug in lugares:
+            if lug.id_lg != 1:
+                data = {'nombre':nombre, 'descripcion': descripcion, 'precio': precio, 'estado': "Activo", 'id_lg': lug.id_lg}
+                formulario = productoForm(data)
+                formulario.save()
         return redirect('/'+str(lg)+'/'+'productos')
     return render(request, "Productos/crear.html", {'formulario': formulario})
 
@@ -253,6 +337,16 @@ def materiap(request, lg):
     else:
         return render(request, "materiap/index.html", {'materiap': lista, 'lugar': lg})
 
+def copymp(lg):
+    materiap = materia_p.objects.all()
+    fecha = datetime.now()
+    for mp in materiap:
+        if mp.id_lg_id == 1:
+            data = {'nombre': mp.nombre, 'cantidad': 0, 'unidad': mp.unidad, 'costo': 0, 'costo_u': mp.costo_u, 'proveedor': mp.proveedor, 'contacto': mp.contacto, 'tiempo': mp.tiempo, 'mincant': mp.mincant, 'descripcion': mp.descripcion, 'estado': 'Activo','fecha': str(fecha.strftime("%B")) + "/" + str(fecha.strftime("%Y")) , 'id_lg': lg}
+            formulario = mpForm(data)
+            if formulario.is_valid():
+                formulario.save()
+
 def avastecer(request, id, lg):
     materia = materia_p.objects.get(id_mp=id)
     formulario = avsForm(request.POST or None, request.FILES or None)
@@ -266,6 +360,7 @@ def avastecer(request, id, lg):
 
 
 def agregar_mp(request, lg):
+    lugares = lugar.objects.all()
     formulario = dtMpForm(request.POST or None, request.FILES or None)
     fecha = datetime.now()
     contacto = "None"
@@ -294,14 +389,22 @@ def agregar_mp(request, lg):
 
         if formulario.data['descripcion'] != '':
             descripcion = formulario.data['descripcion']
+        
+        nombre = formulario.data['nombre']
+        cantidad = int(formulario.data['cantidad'])
+        unidad = formulario.data['unidad']
+        proveedor = formulario.data['proveedor']
 
-        data = {'nombre': formulario.data['nombre'], 'cantidad': int(formulario.data['cantidad']), 'unidad': formulario.data['unidad'], 'costo': costot, 'costo_u': costou, 'proveedor': formulario.data['proveedor'], 'contacto': contacto, 'tiempo': tiempo, 'mincant': int(mincant), 'descripcion': descripcion, 'estado': 'Activo','fecha': str(fecha.strftime("%B")) + "/" + str(fecha.strftime("%Y")) , 'id_lg': lg}
-        nom = formulario.data['nombre']
-        formulario = mpForm(data)
-        if formulario.is_valid():
-            formulario.save()
-            materiap = materia_p.objects.get(nombre=nom, id_lg=lg)
-            finanzas(materiap.id_mp ,"Materia prima: "+ nom , 0-costot, "/materiap", lg)
+        for lu in lugares:
+            if lu.id_lg == lg:
+                data = {'nombre': nombre, 'cantidad': cantidad, 'unidad': unidad, 'costo': costot, 'costo_u': costou, 'proveedor': proveedor, 'contacto': contacto, 'tiempo': tiempo, 'mincant': int(mincant), 'descripcion': descripcion, 'estado': 'Activo','fecha': str(fecha.strftime("%B")) + "/" + str(fecha.strftime("%Y")) , 'id_lg': lu.id_lg}
+            else:
+                data = {'nombre': nombre, 'cantidad': 0, 'unidad': unidad, 'costo': 0, 'costo_u': costou, 'proveedor': proveedor, 'contacto': contacto, 'tiempo': tiempo, 'mincant': int(mincant), 'descripcion': descripcion, 'estado': 'Activo','fecha': str(fecha.strftime("%B")) + "/" + str(fecha.strftime("%Y")) , 'id_lg': lu.id_lg}
+            formulario = mpForm(data)
+            if formulario.is_valid():
+                formulario.save()
+                materiap = materia_p.objects.get(nombre=nombre, id_lg=lu.id_lg)
+                finanzas(materiap.id_mp ,"Materia prima: "+ nombre , 0-costot, "/materiap", lu.id_lg)
         return redirect('/' + str(lg) + '/materiap')
     return render(request, "materiap/crear.html", {'formulario': formulario})
 
@@ -341,6 +444,56 @@ def materias(request, lg):
             lista.append(ms)
     return render(request, "materias/index.html", {'materias': lista, 'lugar': lg})
 
+def copypz(mps, lg):
+    materias = materia_s.objects.all()
+    materiap = materia_p.objects.all()
+    for ms2 in materias:
+        if ms2.id_lg_id == lg:
+            for mp2 in materiap:
+                if mp2.id_lg_id == lg:
+                    for mu in mps:
+                        if mp2.nombre == mu[1] and ms2.nombre == mu[0]:
+                            data = {'id_ms': ms2.id_ms, 'id_mp': mp2.id_mp, 'cantidad': mu[2], 'costo': int(mu[2]) * mp2.costo_u}
+                            formulario = mzForm(data)
+                            if formulario.is_valid():
+                                formulario.save()
+
+def copyz(lg):
+    materias = materia_s.objects.all()
+    mezclas = mezcla.objects.all()
+    materiap = materia_p.objects.all()
+    rep = "no"
+    nombres = []
+    estan = []
+    mps = []
+    for ms in materias:
+        if ms.nombre not in nombres:
+            nombres.append(ms.nombre)
+            estan.append(ms)
+            for mz in mezclas:
+                if mz.id_ms_id == ms.id_ms:
+                    for mp in materiap:
+                        if mp.id_mp == mz.id_mp_id:
+                            mps.append([ms.nombre, mp.nombre, mz.cantidad])
+        else:
+            for mz in mezclas:
+                if mz.id_ms_id == ms.id_ms:
+                    for mp in materiap:
+                        if mp.id_mp == mz.id_mp_id:
+                            for ml in mps:
+                                if mp.nombre == ml[1]:
+                                    rep = "si"
+                                    break
+                            if rep == "no":
+                                mps.append([ms.nombre, mp.nombre, mz.cantidad])
+                            rep = "no"
+    for et in estan:
+        data = {'nombre': et.nombre, 'descripcion': et.descripcion, 'estado': "Activo", 'id_lg': lg}
+        formulario = msForm(data)
+        if formulario.is_valid():
+            formulario.save()
+    copypz(mps, lg)
+
 def agregar_ms(request, lg):
     materias = materia_s.objects.all()
     lugares = lugar.objects.all()
@@ -350,14 +503,14 @@ def agregar_ms(request, lg):
     if formulario.is_valid():
         if formulario.data['descripcion'] != '':
             descripcion = formulario.data['descripcion']
-            nombre = formulario.data['nombre']
+        nombre = formulario.data['nombre']
         for lug in lugares:
             for ms in materias: 
                 if ms.id_lg_id == lug.id_lg and ms.nombre == nombre:
                     entra = "si"
                     break
             if lug.id_lg != 1 and entra == "no":
-                data = {'nombre': nombre, 'descripcion': descripcion, 'estado': "Activo", 'id_lg': lug}
+                data = {'nombre': nombre, 'descripcion': descripcion, 'estado': "Activo", 'id_lg': lug.id_lg}
                 formulario = msForm(data)
                 if formulario.is_valid():
                     formulario.save()
@@ -410,8 +563,6 @@ def agregar_mz(request, id, lg):
     mat = materia_s.objects.get(id_ms=id)
     materias = materia_s.objects.all()
     materiap = materia_p.objects.all()
-    mezclas = mezcla.objects.all()
-    entro = "no"
     formulario = dtMzForm(request.POST or None, request.FILES or None)
     data = {}
     if formulario.is_valid():
@@ -419,18 +570,11 @@ def agregar_mz(request, id, lg):
         for mp in materiap:
             if (mp.nombre).upper() == nombremp:
                 for ms in materias:
-                    for mz in mezclas:
-                        if ms.id_lg_id == mp.id_lg_id and mp.id_mp == mz.id_mp_id:
-                            entro = "si" 
-                            break
-                    if entro == "si":
-                        break
-                    elif ms.nombre == mat.nombre and ms.id_lg_id == mp.id_lg_id:
+                    if ms.nombre == mat.nombre and ms.id_lg_id == mp.id_lg_id:
                         data = {'id_ms': ms.id_ms, 'id_mp': mp.id_mp, 'cantidad': formulario.data['cantidad'], 'costo': int(formulario.data['cantidad']) * mp.costo_u}
                         formulario = mzForm(data)
                         if formulario.is_valid():
                             formulario.save()
-            entro = "no"
         return redirect("/"+ str(lg) +'/mezcla' + str(id))
     return render(request, "mezcla/crear.html", {'formulario': formulario})
 
@@ -468,11 +612,18 @@ def posiciones(request, id, lg):
     return render(request, "posicion/index.html", {'posiciones': resultado, 'producto': id, 'lugar': lg})
 
 def agregar_ps(request, id, lg):
+    productos = producto.objects.all()
+    lugares = lugar.objects.all()
     formulario = dtPsForm(request.POST or None, request.FILES or None)
     if formulario.is_valid():
-        data = {'nombre': formulario.data['nombre'], 'precio': formulario.data['precio'], 'id_pd': id}
-        formulario = psForm(data)
-        formulario.save()
+        nombre = formulario.data['nombre']
+        precio = formulario.data['precio']
+        for lug in lugares:
+            for pd in productos:
+                if pd.id_lg_id == lug.id_lg:
+                    data = {'nombre': nombre, 'precio': precio, 'id_pd': pd.id_pd}
+                    formulario = psForm(data)
+                    formulario.save()
         return redirect("/"+str(lg)+'/posicion'+ str(id))
     return render(request, "posicion/crear.html", {'formulario': formulario})
 
@@ -511,17 +662,28 @@ def menus(request, id, lg):
     return render(request, "menu/index.html", {'menus': elementos, 'posicion': id, 'lugar': lg})
 
 def agregar_mn(request, id, lg):
+    productos = producto.objects.all()
+    py = posicion.objects.get(id_ps=id) 
+    nom = producto.objects.get(id_pd=py.id_pd_id)
+    posiciones = posicion.objects.all()
+    lugares = lugar.objects.all()
     materias = materia_s.objects.all()
     formulario = dtMnForm(request.POST or None, request.FILES or None)
     data = {}
     if formulario.is_valid():
-        for ms in materias:
-            if (ms.nombre).upper() == (formulario.data['materia_s']).upper():
-                if ms.id_lg_id == lg:
-                    data = {'id_ms': ms.id_ms, 'id_ps': id}
-        formulario = mnForm(data)
-        if formulario.is_valid():
-            formulario.save()
+        mats = formulario.data['materia_s']
+        for lug in lugares:
+            for pd in productos:
+                if pd.id_lg_id == lug.id_lg and pd.nombre == nom.nombre:
+                    for ps in posiciones:
+                        if ps.nombre == py.nombre and ps.id_pd_id == pd.id_pd:
+                            for ms in materias:
+                                if (ms.nombre).upper() == (mats).upper():
+                                    if ms.id_lg_id == lg:
+                                        data = {'id_ms': ms.id_ms, 'id_ps': ps.id_ps}
+                                        formulario = mnForm(data)
+                                        if formulario.is_valid():
+                                            formulario.save()
         return redirect("/"+str(lg)+'/menu' + str(id))
     return render(request, "menu/crear.html", {'formulario': formulario})
 
@@ -888,7 +1050,6 @@ def enviarp(request, nombrep, lg):
                     mp.costo -= mp.costo_u*int(formulario.data['cantidad'])
                     mp.save()
                     resta = mp.costo_u*int(formulario.data['cantidad'])
-                    print("pr1: ",resta)
                     for fz in finanzasi:
                         if fz.id_sv == mp.id_mp:
                             if fz.costo > 0-(resta):
