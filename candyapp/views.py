@@ -612,6 +612,7 @@ def posiciones(request, id, lg):
     return render(request, "posicion/index.html", {'posiciones': resultado, 'producto': id, 'lugar': lg})
 
 def agregar_ps(request, id, lg):
+    nombrepd = producto.objects.get(id_pd=id).nombre
     productos = producto.objects.all()
     lugares = lugar.objects.all()
     formulario = dtPsForm(request.POST or None, request.FILES or None)
@@ -620,7 +621,7 @@ def agregar_ps(request, id, lg):
         precio = formulario.data['precio']
         for lug in lugares:
             for pd in productos:
-                if pd.id_lg_id == lug.id_lg:
+                if pd.id_lg_id == lug.id_lg and pd.nombre == nombrepd:
                     data = {'nombre': nombre, 'precio': precio, 'id_pd': pd.id_pd}
                     formulario = psForm(data)
                     formulario.save()
